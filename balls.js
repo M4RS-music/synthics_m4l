@@ -77,6 +77,64 @@ function Ball(i, rad, x, y, vx, vy, color, mass){
   }
 }
 
+function CollisionBox(x, y, w, h){
+  this.position = [x, y];
+  this.size = [w, h];
+  this.x = x;
+  this.y = y;
+  this.h = h;
+  this.w = w;
+  this.corners = [[], [], [], []];
+
+  this.calculateCorners = function(){
+    var w = this.size[0] / 2;
+    var	h = this.size[1] / 2;
+    var x = this.position[0] + w;
+    var y = this.position[1] + h;
+
+    this.corners[0][0] = x - w;
+    this.corners[0][1] = y - h;
+    this.corners[1][0] = x + w;
+    this.corners[1][1] = y - h;
+    this.corners[2][0] = x - w;
+    this.corners[2][1] = y + h;
+    this.corners[3][0] = x + w;
+    this.corners[3][1] = y + h;
+
+  }
+
+
+  this.render = function(ctx){
+    //Draw BOX
+    ctx.fillStyle = "rgba(10, 10, 10, 0.2)";
+    ctx.strokeStyle = "rgba(1, 1, 1, 0.5)";
+    ctx.rect(this.position[0], this.position[1], this.size[0], this.size[1]);
+
+    //Draw Top Left Corner
+    ctx.fillStyle = "rgba(120, 1, 60, 0.6)";
+    ctx.arc(this.corners[0][0], this.corners[0][1], 7, 0, Math.PI * 2);
+
+
+    //Draw Top Right Corner
+    ctx.fillStyle = "rgba(120, 1, 60, 0.6)";
+    ctx.arc(this.corners[1][0], this.corners[1][1], 7, 0, Math.PI * 2);
+
+
+    //Draw Bottom Left Corner
+    ctx.fillStyle = "rgba(120, 1, 60, 0.6)";
+    ctx.arc(this.corners[2][0], this.corners[2][1], 7, 0, Math.PI * 2);
+
+
+    //Draw Bottom Right Corner
+    ctx.fillStyle = "rgba(100, 1, 60, 0.6)";
+    ctx.arc(this.corners[3][0], this.corners[3][1], 7, 0, Math.PI * 2);
+
+  }
+}
+
+
+///FUNCTIONS
+
 function tick(){
   sketch.glclear();
   for (var i = 0; i < numberBalls; i++) {
@@ -98,8 +156,6 @@ function tick(){
     sketch.glcolor(0.9,0.9,0.3);
     sketch.moveto(0,0);
     sketch.circle(0.3);
-    sketch.point(5,5);
     refresh();
   }
-
-bang();
+  bang();

@@ -1,4 +1,7 @@
-function bang()
+
+
+
+function draw()
 {
 
   sketch.glclear();
@@ -14,4 +17,4 @@ function bang()
   refresh();
 }
 
-bang();
+draw();
