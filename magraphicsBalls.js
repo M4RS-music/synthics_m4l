@@ -291,14 +291,14 @@ function floatToCoord(f){ //returns the coordinate or a floating point position 
 }
 
 function coordToFloat(c){
-  return c/100 - 1;
+  return -(c/100 - 1);
 }
 
 function sign(x) { return x > 0 ? 1 : x < 0 ? -1 : 0; }
 
 ///////////////////////////////////INIT/////////////////////////////////////////
 for(var i=0; i<numberBalls; i++){
-  var rad = 25;
+  var rad = 5;
   var x = randIntRange(rad, width - rad);
   var y = randIntRange(rad, height - rad);
   var vx = 5; //pixels per tick velocity
@@ -324,18 +324,5 @@ for(var i = 0; i < numberBoxes; i++){
   boxes.push(new CollisionBox(50, 50, 50, 50));
   boxesHistory.push(new CollisionBox(50, 50, 50, 50));
 }
-tsk = new Task(function game(){
-  clear();
-  for(var i=0; i<numberBalls; i++){
-    var b = balls[i];
-    b.update();
-    b.render(sketch);
-  }
-  for(var i=0; i<numberBoxes; i++){
-    var b = boxes[i];
-    b.calculateCorners();
-    b.render(sketch);
-  }
-refresh(); //assign mouse events to functions
-}, this)
-tsk.interval = 10000000;
+tsk = new Task(game(), this)
+tsk.interval = 100;

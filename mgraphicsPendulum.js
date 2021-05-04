@@ -16,7 +16,7 @@ numberMagnets = 3;
 beingDragged = null;
 paused = false;
 cOrange = [0.9,0.7,0.2,1];
-cYellow = [0.9,0.9,0.3,1];
+cYellow = [0.9,0.9,0.3,0.7];
 cGrey = [0.3, 0.3, 0.3];
 cBlack = [0,0,0];
 
@@ -28,7 +28,7 @@ function Pendulum(x, y, len){
   this.angle = Math.PI / 4;
   this.v = 0.0;
   this.a = 0.0;
-  this.rad = 25;
+  this.rad = 1;
 
 
   this.update = function(){
@@ -39,6 +39,7 @@ function Pendulum(x, y, len){
     this.position = [this.len * Math.sin(this.angle), this.len * Math.cos(this.angle)];
     this.position[0] += this.origin[0];
     this.position[1] += this.origin[1];
+    post(this.position);
     }
 
     this.render = function(ctx){
@@ -48,12 +49,12 @@ function Pendulum(x, y, len){
       ctx.circle(0.05);
 
       //DRAW LINE
-      ctx.lineTo(coordToFloat(this.position[0]), coordToFloat(this.position[1]));
+      ctx.lineto(coordToFloat(this.position[0]), coordToFloat(this.position[1]));
 
       //DRAW WEIGHT
       ctx.glcolor(cYellow);
       ctx.moveto(coordToFloat(this.position[0]), coordToFloat(this.position[1]));
-      ctx.circle(coordToFloat(this.rad));
+      ctx.circle(0.2);
     }
 }
 
@@ -70,9 +71,9 @@ function Magnet(x, y, r) {
   this.render = function(ctx){
     ctx.glcolor(cOrange);
     ctx.moveto(coordToFloat(this.position[0]), coordToFloat(this.position[1]));
-    ctx.circle(coordToFloat(this.rad));
+    ctx.circle(0.1);
     ctx.glcolor(cYellow);
-    ctx.circle(coordToFloat(this.field));
+    ctx.circle(0.2);
   }
 }
 
@@ -84,7 +85,7 @@ function floatToCoord(f){ //returns the coordinate or a floating point position 
 }
 
 function coordToFloat(c){
-  return c/100 - 1;
+  return -(c/100 - 1);
 }
 
 function clear(){
@@ -93,11 +94,12 @@ function clear(){
 
 function game(){
   clear();
+  sketch.glclear();
   pend.update();
-  pend.render(ctx);
+  pend.render(sketch);
   for(var i=0; i<numberMagnets; i++){
     var mag = magnets[i];
-    mag.render(ctx);
+    mag.render(sketch);
   }
   //canvas.onmousedown = mouseDown;
   //canvas.onmouseup = mouseUp;
@@ -115,7 +117,7 @@ function randIntRange(min, max){
 }
 
 ///////////////////////////////////INIT/////////////////////////////////////////
-pend = new Pendulum(100, 20, 75);
+pend = new Pendulum(100, 20, 110);
 for(var i=0; i<numberMagnets; i++){
   var r = 10;
   var x = randIntRange(r, width - r);
@@ -137,4 +139,5 @@ for(var i=0; i<numberMagnets; i++){
 
 /////////////////////////////////RUN GAME///////////////////////////////////////
 tsk = new Task(game(), this)
-tsk.interval = 10000;
+tsk.interval = 10;
+tsk.repeat = 1000;
