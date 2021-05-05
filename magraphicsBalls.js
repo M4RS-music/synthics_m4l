@@ -89,7 +89,7 @@ function Ball(i, rad, x, y, vx, vy, color, mass){
   this.render = function(ctx){
     sketch.glcolor(this.color);
     sketch.moveto(coordToFloat(this.x), coordToFloat(this.y));
-    sketch.circle(coordToFloat(this.r));
+    sketch.circle(0.005);
   //  post("rendered a ball")
   }
 }
@@ -324,5 +324,18 @@ for(var i = 0; i < numberBoxes; i++){
   boxes.push(new CollisionBox(50, 50, 50, 50));
   boxesHistory.push(new CollisionBox(50, 50, 50, 50));
 }
-tsk = new Task(game(), this)
+var tsk = new Task(function(){
+  clear();
+  for(var i=0; i<numberBalls; i++){
+    var b = balls[i];
+    b.update();
+    b.render(sketch);
+  }
+  for(var i=0; i<numberBoxes; i++){
+    var b = boxes[i];
+    b.calculateCorners();
+    b.render(sketch);
+  }
+}, this);
 tsk.interval = 100;
+tsk.repeat(1000);

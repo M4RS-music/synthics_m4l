@@ -39,7 +39,6 @@ function Pendulum(x, y, len){
     this.position = [this.len * Math.sin(this.angle), this.len * Math.cos(this.angle)];
     this.position[0] += this.origin[0];
     this.position[1] += this.origin[1];
-    post(this.position);
     }
 
     this.render = function(ctx){
@@ -138,6 +137,8 @@ for(var i=0; i<numberMagnets; i++){
 }
 
 /////////////////////////////////RUN GAME///////////////////////////////////////
-tsk = new Task(game(), this)
+var tsk = new Task(function(){
+  game();
+}, this);
 tsk.interval = 10;
-tsk.repeat = 1000;
+tsk.repeat(10000);
