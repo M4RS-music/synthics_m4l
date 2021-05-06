@@ -336,6 +336,7 @@ var tsk = new Task(function(){
     b.calculateCorners();
     b.render(sketch);
   }
+  refresh();
 }, this);
 tsk.interval = 100;
 tsk.repeat(1000);
