@@ -9,11 +9,11 @@ var width, height, boxes = [], numberBoxes, balls = [], ballsHistory = [],
 
 width = 200;
 height = 200;
-numberBalls = 1;
+numberBalls = 5;
 numberBoxes = 1;
 bounce = 0.9;
-gravity = -0.09;
-drag = 0.001;
+gravity = -0.05;
+drag = 0.005;
 friction = 0.04;
 dragOk = false;
 beingDragged = null;
@@ -89,8 +89,8 @@ function Ball(i, rad, x, y, vx, vy, color, mass){
   this.render = function(ctx){
     sketch.glcolor(this.color);
     sketch.moveto(coordToFloat(this.x), coordToFloat(this.y));
-    sketch.circle(0.005);
-  //  post("rendered a ball")
+    sketch.circle(0.11);
+
   }
 }
 
@@ -124,43 +124,44 @@ function CollisionBox(x, y, w, h){
   this.render = function(ctx){
     //Draw BOX
     ctx.glcolor(.3, .3, .3);
-    ctx.moveto(coordToFloat(this.position[0] + (this.size[0]/2)), coordToFloat(this.position[1] + (this.size[1]/2)));
-    ctx.plane(this.size[0]/2, this.size[1]/2)
+    ctx.moveto(coordToFloat(this.position[0]), coordToFloat(this.position[1]));
+    ctx.plane(-coordToFloat(this.size[0]/2),-coordToFloat(this.size[1]/2));
     //Draw Top Left Corner
     ctx.glcolor(0.9,0.9,0.3);
     ctx.moveto(coordToFloat(this.corners[0][0]), coordToFloat(this.corners[0][1]));
-    ctx.circle(coordToFloat(7));
+    ctx.circle(0.037);
 
     //Draw Top Right Corner
     ctx.moveto(coordToFloat(this.corners[1][0]), coordToFloat(this.corners[1][1]));
-    ctx.circle(coordToFloat(7));
+    ctx.circle(0.037);
 
     //Draw Bottom Left Corner
     ctx.moveto(coordToFloat(this.corners[2][0]), coordToFloat(this.corners[2][1]));
-    ctx.circle(coordToFloat(7));
+    ctx.circle(0.037);
 
     //Draw Bottom Right Corner
     ctx.moveto(coordToFloat(this.corners[3][0]), coordToFloat(this.corners[3][1]));
-    ctx.circle(coordToFloat(7));
+    ctx.circle(0.037);
+
   }
 }
 
 
 ///////////////////////////////////FUNCTIONS////////////////////////////////////
-function playPause(){
-
-  if(!paused){
-    for(var i=0; i<numberBalls; i++){
-      var b = ballsHistory[i];
-      balls[i] = new Ball(b.i, b.rad, b.x, b.y, b.vx, b.vy, b.color, b.mass);
-    }
-    for(var i=0; i<numberBoxes; i++){
-      var b = boxesHistory[i];
-      boxes[i] = new CollisionBox(b.position[0], b.position[1], b.size[0], b.size[1]);
-    }
-  }
-  paused = !paused;
-}
+// function playPause(){
+//
+//   if(!paused){
+//     for(var i=0; i<numberBalls; i++){
+//       var b = ballsHistory[i];
+//       balls[i] = new Ball(b.i, b.rad, b.x, b.y, b.vx, b.vy, b.color, b.mass);
+//     }
+//     for(var i=0; i<numberBoxes; i++){
+//       var b = boxesHistory[i];
+//       boxes[i] = new CollisionBox(b.position[0], b.position[1], b.size[0], b.size[1]);
+//     }
+//   }
+//   paused = !paused;
+// }
 
 function clear(){
   sketch.glclear();
@@ -168,6 +169,7 @@ function clear(){
 
 function game(){
   clear();
+  sketch.glclear();
   for(var i=0; i<numberBalls; i++){
     var b = balls[i];
     b.update();
@@ -178,6 +180,7 @@ function game(){
     b.calculateCorners();
     b.render(sketch);
   }
+  refresh();
  //assign mouse events to functions
 }
 
@@ -318,25 +321,16 @@ for(var i=0; i<numberBalls; i++){
   }
 
   balls.push(new Ball(i, rad, x, y, vx, vy, color, mass));
-  ballsHistory.push(new Ball(i, rad, x, y, vx, vy, color, mass));
+  //ballsHistory.push(new Ball(i, rad, x, y, vx, vy, color, mass));
 }
 for(var i = 0; i < numberBoxes; i++){
-  boxes.push(new CollisionBox(50, 50, 50, 50));
-  boxesHistory.push(new CollisionBox(50, 50, 50, 50));
+  boxes.push(new CollisionBox(50, 50, 25, 25));
+//  boxesHistory.push(new CollisionBox(50, 50, 50, 50));
 }
+
+/////////////////////////////////RUN GAME///////////////////////////////////////
 var tsk = new Task(function(){
-  clear();
-  for(var i=0; i<numberBalls; i++){
-    var b = balls[i];
-    b.update();
-    b.render(sketch);
-  }
-  for(var i=0; i<numberBoxes; i++){
-    var b = boxes[i];
-    b.calculateCorners();
-    b.render(sketch);
-  }
-  refresh();
+  game();
 }, this);
-tsk.interval = 100;
+tsk.interval = 10;
 tsk.repeat(1000);
