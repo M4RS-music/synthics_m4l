@@ -9,8 +9,8 @@ gravity, pend, dragOk, beingDragged, mouseInit, radInit, cYellow, cBlack, cGrey,
 width = 200;
 height = 200;
 bounce = 0.65;
-gravity = -3;
-dampening = 0.98;
+gravity = -0.3;
+dampening = 0.99;
 dragOk = false;
 numberMagnets = 3;
 beingDragged = null;
@@ -28,7 +28,7 @@ function Pendulum(x, y, len){
   this.angle = Math.PI / 4;
   this.v = 0.0;
   this.a = 0.0;
-  this.rad = 1;
+  this.rad = 20;
 
 
   this.update = function(){
@@ -53,7 +53,7 @@ function Pendulum(x, y, len){
       //DRAW WEIGHT
       ctx.glcolor(cYellow);
       ctx.moveto(coordToFloat(this.position[0]), coordToFloat(this.position[1]));
-      ctx.circle(0.2);
+      ctx.circle(this.rad/100);
     }
 }
 
@@ -70,9 +70,9 @@ function Magnet(x, y, r) {
   this.render = function(ctx){
     ctx.glcolor(cOrange);
     ctx.moveto(coordToFloat(this.position[0]), coordToFloat(this.position[1]));
-    ctx.circle(0.1);
+    ctx.circle(this.rad/100);
     ctx.glcolor(cYellow);
-    ctx.circle(0.2);
+    ctx.circle(this.field/100);
   }
 }
 

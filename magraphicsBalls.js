@@ -89,7 +89,7 @@ function Ball(i, rad, x, y, vx, vy, color, mass){
   this.render = function(ctx){
     sketch.glcolor(this.color);
     sketch.moveto(coordToFloat(this.x), coordToFloat(this.y));
-    sketch.circle(0.11);
+    sketch.circle(this.rad/100);
 
   }
 }
@@ -124,8 +124,8 @@ function CollisionBox(x, y, w, h){
   this.render = function(ctx){
     //Draw BOX
     ctx.glcolor(.3, .3, .3);
-    ctx.moveto(coordToFloat(this.position[0]), coordToFloat(this.position[1]));
-    ctx.plane(-coordToFloat(this.size[0]/2),-coordToFloat(this.size[1]/2));
+    ctx.moveto(coordToFloat(this.position[0]+(this.size[0]/2)), coordToFloat(this.position[1]+(this.size[1]/2)));
+    ctx.plane((this.size[0]/2)/100,(this.size[1]/2)/100);
     //Draw Top Left Corner
     ctx.glcolor(0.9,0.9,0.3);
     ctx.moveto(coordToFloat(this.corners[0][0]), coordToFloat(this.corners[0][1]));
@@ -301,7 +301,7 @@ function sign(x) { return x > 0 ? 1 : x < 0 ? -1 : 0; }
 
 ///////////////////////////////////INIT/////////////////////////////////////////
 for(var i=0; i<numberBalls; i++){
-  var rad = 5;
+  var rad = 15;
   var x = randIntRange(rad, width - rad);
   var y = randIntRange(rad, height - rad);
   var vx = 5; //pixels per tick velocity
