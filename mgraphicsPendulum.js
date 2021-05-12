@@ -4,7 +4,7 @@ outlets = 4;
 
 ///////////////////////////////////GLOBAL///////////////////////////////////////
 var canvas, ctx, width, height, magnets = [], numberMagnets, dampening, bounce,
-gravity, pend, dragOk, beingDragged, mouseInit, radInit, cYellow, cBlack, cGrey, drive;
+gravity, pend, dragOk, beingDragged, mouseInit, radInit, cYellow, cBlack, cGrey, drive, paused, initpause;
 
 width = 200;
 height = 200;
@@ -19,6 +19,9 @@ cOrange = [0.9,0.7,0.2,1];
 cYellow = [0.9,0.9,0.3,0.7];
 cGrey = [0.3, 0.3, 0.3];
 cBlack = [0,0,0];
+paused = true;
+tick = 0;
+
 
 ///////////////////////////////////OBJECTS//////////////////////////////////////
 function Pendulum(x, y, len){
@@ -32,14 +35,26 @@ function Pendulum(x, y, len){
 
 
   this.update = function(){
-    this.a = (gravity / this.len) * Math.sin(this.angle);
-    this.v += this.a;
-    this.v *= dampening;
-    this.angle += this.v;
-    this.position = [this.len * Math.sin(this.angle), this.len * Math.cos(this.angle)];
-    this.position[0] += this.origin[0];
-    this.position[1] += this.origin[1];
+    if(!paused){
+      this.a = (gravity / this.len) * Math.sin(this.angle);
+      this.v += this.a;
+      this.v *= dampening;
+      this.angle += this.v;
+      this.position = [this.len * Math.sin(this.angle), this.len * Math.cos(this.angle)];
+      this.position[0] += this.origin[0];
+      this.position[1] += this.origin[1];
+
     }
+    if(tick == 0){
+      this.a = (gravity / this.len) * Math.sin(this.angle);
+      this.v += this.a;
+      this.v *= dampening;
+      this.angle += this.v;
+      this.position = [this.len * Math.sin(this.angle), this.len * Math.cos(this.angle)];
+      this.position[0] += this.origin[0];
+      this.position[1] += this.origin[1];
+      tick++;
+    }}
 
     this.render = function(ctx){
       //DRAW PIVOT
@@ -78,6 +93,13 @@ function Magnet(x, y, r) {
 
 
 ///////////////////////////////////FUNCTIONS////////////////////////////////////
+function playPause(){
+  paused = !paused;
+  tick = 0;
+  pend = new Pendulum(100, 20, 110);
+  tsk.repeat(10000);
+}
+
 
 function floatToCoord(f){ //returns the coordinate or a floating point position on sketch
   return 100 * f + 100;
