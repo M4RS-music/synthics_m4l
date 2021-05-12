@@ -38,8 +38,8 @@ function Ball(i, rad, x, y, vx, vy, color, mass){
 
   this.update = function(){
     if(!paused){
-      if(this.x-this.rad <= 0 || this.x+this.rad >= width) {this.vx = collidex(this.vx, this); outlet(0, 1);}
-      if(this.y-this.rad <= 0 || this.y+this.rad >= height) {this.vy = collidey(this.vy, this); outlet(0, 1); outlet(0, 0);}
+      if(this.x-this.rad <= 0 || this.x+this.rad >= width) {this.vx = collidex(this.vx, this); outlet(0, 1); outlet(1, this.y*2)}
+      if(this.y-this.rad <= 0 || this.y+this.rad >= height) {this.vy = collidey(this.vy, this); outlet(0, 1); outlet(1, this.x*2)}
 
       //collision detection w boxes
       for(var x=0; x < numberBoxes; x++){
@@ -54,7 +54,7 @@ function Ball(i, rad, x, y, vx, vy, color, mass){
       }
 
       //collision detection w other balls
-      
+
 	if (numberBalls > 1){
 	for(var i=0; i<numberBalls; i++){
         if(i !== this.i){
@@ -312,8 +312,8 @@ for(var i=0; i<numberBalls; i++){
   var rad = 15;
   var x = randIntRange(rad, width - rad);
   var y = randIntRange(rad, height - rad);
-  var vx = 5; //pixels per tick velocity
-  var vy = -1;
+  var vx = 8; //pixels per tick velocity
+  var vy = -4;
   var color = [0.9,0.9,0.3,1];
   var mass = 1;
 
