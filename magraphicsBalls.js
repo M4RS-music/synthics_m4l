@@ -38,8 +38,8 @@ function Ball(i, rad, x, y, vx, vy, color, mass){
 
   this.update = function(){
     if(!paused){
-      if(this.x-this.rad <= 0 || this.x+this.rad >= width) this.vx = collidex(this.vx, this);
-      if(this.y-this.rad <= 0 || this.y+this.rad >= height) this.vy = collidey(this.vy, this);
+      if(this.x-this.rad <= 0 || this.x+this.rad >= width) {this.vx = collidex(this.vx, this); outlet(0, 1);}
+      if(this.y-this.rad <= 0 || this.y+this.rad >= height) {this.vy = collidey(this.vy, this); outlet(0, 1); outlet(0, 0);}
 
       //collision detection w boxes
       for(var x=0; x < numberBoxes; x++){
@@ -54,7 +54,9 @@ function Ball(i, rad, x, y, vx, vy, color, mass){
       }
 
       //collision detection w other balls
-      for(var i=0; i<numberBalls; i++){
+      
+	if (numberBalls > 1){
+	for(var i=0; i<numberBalls; i++){
         if(i !== this.i){
           var b = balls[i];
 
@@ -62,7 +64,7 @@ function Ball(i, rad, x, y, vx, vy, color, mass){
             {
             //console.log(getDistance(this.x, this.y, b.x, b.y));
               solveElasticCollision(this, b);
-            }}
+            }}}
       }
 
       this.vy -= gravity;
@@ -148,20 +150,26 @@ function CollisionBox(x, y, w, h){
 
 
 ///////////////////////////////////FUNCTIONS////////////////////////////////////
-// function playPause(){
-//
-//   if(!paused){
-//     for(var i=0; i<numberBalls; i++){
-//       var b = ballsHistory[i];
-//       balls[i] = new Ball(b.i, b.rad, b.x, b.y, b.vx, b.vy, b.color, b.mass);
-//     }
-//     for(var i=0; i<numberBoxes; i++){
-//       var b = boxesHistory[i];
-//       boxes[i] = new CollisionBox(b.position[0], b.position[1], b.size[0], b.size[1]);
-//     }
-//   }
-//   paused = !paused;
-// }
+ function playPause(){
+  	if(!paused){
+     for(var i=0; i<numberBalls; i++){
+       var b = ballsHistory[i];
+      balls[i] = new Ball(b.i, b.rad, b.x, b.y, b.vx, b.vy, b.color, b.mass);
+     }
+     for(var i=0; i<numberBoxes; i++){
+       var b = boxesHistory[i];
+       boxes[i] = new CollisionBox(b.position[0], b.position[1], b.size[0], b.size[1]);
+     }
+   }
+   paused = !paused;
+	tsk.repeat(10000);
+
+ }
+
+function changeNumberBalls(no){
+	numberBalls = no;
+	post(numberBalls);
+}
 
 function clear(){
   sketch.glclear();
@@ -321,11 +329,11 @@ for(var i=0; i<numberBalls; i++){
   }
 
   balls.push(new Ball(i, rad, x, y, vx, vy, color, mass));
-  //ballsHistory.push(new Ball(i, rad, x, y, vx, vy, color, mass));
+  ballsHistory.push(new Ball(i, rad, x, y, vx, vy, color, mass));
 }
 for(var i = 0; i < numberBoxes; i++){
   boxes.push(new CollisionBox(50, 50, 25, 25));
-//  boxesHistory.push(new CollisionBox(50, 50, 50, 50));
+  boxesHistory.push(new CollisionBox(50, 50, 50, 50));
 }
 
 /////////////////////////////////RUN GAME///////////////////////////////////////
@@ -333,4 +341,4 @@ var tsk = new Task(function(){
   game();
 }, this);
 tsk.interval = 10;
-tsk.repeat(1000);
+tsk.repeat(10000);
