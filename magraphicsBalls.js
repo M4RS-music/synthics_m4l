@@ -189,6 +189,7 @@ function game(){
     b.render(sketch);
   }
   refresh();
+
  //assign mouse events to functions
 }
 
@@ -312,8 +313,8 @@ for(var i=0; i<numberBalls; i++){
   var rad = 15;
   var x = randIntRange(rad, width - rad);
   var y = randIntRange(rad, height - rad);
-  var vx = 8; //pixels per tick velocity
-  var vy = -4;
+  var vx = 4; //pixels per tick velocity
+  var vy = -3;
   var color = [0.9,0.9,0.3,1];
   var mass = 1;
 
