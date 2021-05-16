@@ -193,6 +193,83 @@ function game(){
  //assign mouse events to functions
 }
 
+////////////////Click and Drag////////////////////
+function onclick(x,y)
+{
+   var worldx = sketch.screentoworld(x,y)[0];
+   var worldy = sketch.screentoworld(x,y)[1];
+   var colwidth = 2./200; // width of a column, in world coordinates
+   var rowheight = 2./200; // width of a row, in world coordinates
+   var x_click = Math.floor((worldx+1.)/colwidth); // which column we clicked
+   var y_click = Math.floor((1.-worldy)/rowheight); // which row we clicked
+   //state[x_click][y_click] = !state[x_click][y_click]; // flip the state of the clicked point
+   post(x_click, y_click); // output the coordinates and state of the clicked point
+}
+
+// function mouseDown(mouse){
+// 	var cx = mouse.clientX-canvas.offsetLeft;
+// 	var cy = mouse.clientY-canvas.offsetTop;
+// 	for(var i = 0; i<numberBoxes; i++){
+// 		var box = boxes[i];
+// 		for(var c = -1; c < 4; c++){
+// 			if(c == -1){
+// 				var x = box.position[0];
+// 				var y = box.position[1];
+// 				var w = box.size[0];
+// 				var h = box.size[1];
+//
+// 				//console.log(mouse.clientX);
+// 				//console.log(typeof x);
+// 				//console.log(x + w - 7);
+//
+// 				if(cx <= x + w - 7 && cx >= x + 7){
+// 					//console.log("box x");
+// 					if(cy <= y + h - 7 && cy >= y + 7){
+// 					//	console.log("box y");
+// 						beingDragged = [-1, i];
+// 						dragOk = true;
+// 						canvas.onmousemove = mouseDrag;
+// 						}
+// 					}
+// 				}
+// 				else if(getDistance(box.corners[c][0], box.corners[c][1], cx, cy) <= 7){
+// 					dragOk = true;
+// 					beingDragged = [c, i];
+// 					posBeforeClick = [cx, box.size[0], cy, box.size[1]];
+//   				canvas.onmousemove = mouseDrag;
+// 				}
+// 		}
+// 	}
+// }
+//
+// function mouseDrag(mouse){
+// 	if (dragOk){
+// 		//console.log(beingDragged);
+// 		if (beingDragged[0] == -1){
+// 			boxes[beingDragged[1]].position[0] = mouse.clientX - canvas.offsetLeft - boxes[beingDragged[1]].size[0]/2;
+// 			boxes[beingDragged[1]].position[1] = mouse.clientY - canvas.offsetTop - boxes[beingDragged[1]].size[1]/2;
+// 			if(paused){
+// 				boxesHistory[beingDragged[1]].position[0] = mouse.clientX - canvas.offsetLeft - boxes[beingDragged[1]].size[0]/2;
+// 				boxesHistory[beingDragged[1]].position[1] = mouse.clientY - canvas.offsetTop - boxes[beingDragged[1]].size[1]/2;
+// 			}
+// 		}
+// 		if (beingDragged[0] == 3){
+// 			boxes[beingDragged[1]].size[0] = posBeforeClick[1] + (mouse.clientX - canvas.offsetLeft - posBeforeClick[0]);
+// 			boxes[beingDragged[1]].size[1] = posBeforeClick[3] + (mouse.clientY - canvas.offsetTop - posBeforeClick[2]);
+// 			if(paused){
+// 				boxesHistory[beingDragged[1]].size[0] = posBeforeClick[1] + (mouse.clientX - canvas.offsetLeft - posBeforeClick[0]);
+// 				boxesHistory[beingDragged[1]].size[1] = posBeforeClick[3] + (mouse.clientY - canvas.offsetTop - posBeforeClick[2]);
+// 			}
+// 		}
+// 	 }
+// }
+//
+// function mouseUp(mouse){
+// 	dragOk = false;
+// 	beingDragged = null;
+// 	posBeforeClick = null;
+// }
+
 function collidex(v, ball){ //calculates the velocity/spin resulting from a collision with wall
   if(ball.spin !== 0){ //apply effect of spin on velocity
     ball.vy += ball.spin * friction
