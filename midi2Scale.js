@@ -1,4 +1,8 @@
-var ionian=[], dorian=[], phrygian=[], lydian=[], mixolydian=[], aeolian=[], locrian=[], currentScale=[], mode;
+autowatch = 1;
+inlets = 2;
+outlets = 1;
+
+var ionian=[], dorian=[], phrygian=[], lydian=[], mixolydian=[], aeolian=[], locrian=[], currentScale=[], modes=[];
 ionian = [2,2,1,2,2,2,1];
 dorian = [2,1,2,2,2,1,2];
 phrygian = [1,2,2,2,1,2,2];
@@ -6,6 +10,7 @@ lydian = [2,2,2,1,2,2,1];
 mixolydian = [2,2,1,2,2,1,2];
 aeolian = [2,1,2,2,1,2,2];
 locrian = [1,2,2,1,2,2,2];
+modes = [ionian, dorian, phrygian, lydian, mixolydian, aeolian, locrian];
 
 
 
@@ -14,7 +19,8 @@ function setScale(root, mode){ //interface function called by max, will set root
   calculateScale(root, mode);
 }
 
-function calculateScale(root, mode){
+function calculateScale(root, modeI){
+  var mode = modes[modeI];
   var x = 0;
   var it = 0;
   for(var i=0; i<128; i++){
@@ -23,8 +29,10 @@ function calculateScale(root, mode){
     }
     if(x==6){x=0; it++} else{x++}
   }
+  post(currentScale);
 }
-setScale(1, ionian);
+
+setScale(1, 1);
 post(currentScale);
 
 

@@ -1,23 +1,24 @@
 autowatch = 1;
-inlets = 2;
+inlets = 3;
 outlets = 4;
 
 ///////////////////////////////////GLOBAL///////////////////////////////////////
 var width, height, boxes = [], numberBoxes, balls = [], ballsHistory = [],
     boxesHistory = [], numberBalls, drag, dragOk, beingDragged, friction, bounce,
-    gravity, posBeforeClick, paused;
+    gravity, posBeforeClick, paused, trigger;
 
 width = 200;
 height = 200;
 numberBalls = 5;
 numberBoxes = 1;
-bounce = 0.9;
-gravity = -0.05;
-drag = 0.005;
+bounce = 1;
+gravity = -0.01;
+drag = 0.0001;
 friction = 0.04;
 dragOk = false;
 beingDragged = null;
 paused = false;
+trigger = true;
 
 
 
@@ -35,11 +36,16 @@ function Ball(i, rad, x, y, vx, vy, color, mass){
   this.spin = 0;
   this.mass = mass;
   this.pastCollide = false;
+  this.atRestx = false;
+  this.atResty = false;
 
   this.update = function(){
+    if(Math.abs(this.vy) <= -drag){this.vy = 0; this.atResty = true;}
+    if(Math.abs(this.vx) <= -drag){this.vx = 0; this.atRestx = true;}
+
     if(!paused){
-      if(this.x-this.rad <= 0 || this.x+this.rad >= width) {this.vx = collidex(this.vx, this); outlet(0, 1); outlet(1, this.y*2)}
-      if(this.y-this.rad <= 0 || this.y+this.rad >= height) {this.vy = collidey(this.vy, this); outlet(0, 1); outlet(1, this.x*2)}
+      if(this.x-this.rad <= 0 || this.x+this.rad >= width) {this.vx = collidex(this.vx, this); if(trigger){outlet(0, 1); outlet(1, this.y*2 + 40)}}
+      if(this.y-this.rad <= 0 || this.y+this.rad >= height) {this.vy = collidey(this.vy, this); if(trigger){outlet(0, 1); outlet(1, this.x*2 + 40)}}
 
       //collision detection w boxes
       for(var x=0; x < numberBoxes; x++){
@@ -68,10 +74,10 @@ function Ball(i, rad, x, y, vx, vy, color, mass){
       }
 
       this.vy -= gravity;
-      if(sign(this.vx) == 1) this.vx -= drag;
-      if(sign(this.vx) == -1) this.vx += drag;
-      if(sign(this.vy) == 1) this.vy -= drag;
-      if(sign(this.vy) == -1) this.vy += drag;
+      if(sign(this.vx) == 1 && !this.atRestx) {this.vx -= drag;}
+      if(sign(this.vx) == -1 && !this.atRestx) {this.vx += drag;}
+      if(sign(this.vy) == 1 && !this.atResty) {this.vy -= drag;}
+      if(sign(this.vy) == -1 && !this.atResty) {this.vy += drag;}
 
       //if(this.x-this.rad+15 >= 0 && this.x+this.rad-15 <= width)
       this.x += this.vx;
@@ -150,6 +156,24 @@ function CollisionBox(x, y, w, h){
 
 
 ///////////////////////////////////FUNCTIONS////////////////////////////////////
+function triggerBool(b){
+  trigger = b;
+}
+
+function setBounce(n){
+  bounce = n/10;
+//  post(bounce);
+}
+function setGravity(n){
+  gravity = -n/1000;
+//  post(gravity);
+}
+function setDrag(n){
+  drag = -n/10000;
+//  post(drag);
+}
+
+
  function playPause(){
   	if(!paused){
      for(var i=0; i<numberBalls; i++){
@@ -203,7 +227,7 @@ function onclick(x,y)
    var x_click = Math.floor((worldx+1.)/colwidth); // which column we clicked
    var y_click = Math.floor((1.-worldy)/rowheight); // which row we clicked
    //state[x_click][y_click] = !state[x_click][y_click]; // flip the state of the clicked point
-   post(x_click, y_click); // output the coordinates and state of the clicked point
+   ondrag(x_click, y_click); // output the coordinates and state of the clicked point
 }
 
 // function mouseDown(mouse){
@@ -242,33 +266,33 @@ function onclick(x,y)
 // 	}
 // }
 //
-// function mouseDrag(mouse){
-// 	if (dragOk){
-// 		//console.log(beingDragged);
-// 		if (beingDragged[0] == -1){
-// 			boxes[beingDragged[1]].position[0] = mouse.clientX - canvas.offsetLeft - boxes[beingDragged[1]].size[0]/2;
-// 			boxes[beingDragged[1]].position[1] = mouse.clientY - canvas.offsetTop - boxes[beingDragged[1]].size[1]/2;
-// 			if(paused){
-// 				boxesHistory[beingDragged[1]].position[0] = mouse.clientX - canvas.offsetLeft - boxes[beingDragged[1]].size[0]/2;
-// 				boxesHistory[beingDragged[1]].position[1] = mouse.clientY - canvas.offsetTop - boxes[beingDragged[1]].size[1]/2;
-// 			}
-// 		}
-// 		if (beingDragged[0] == 3){
-// 			boxes[beingDragged[1]].size[0] = posBeforeClick[1] + (mouse.clientX - canvas.offsetLeft - posBeforeClick[0]);
-// 			boxes[beingDragged[1]].size[1] = posBeforeClick[3] + (mouse.clientY - canvas.offsetTop - posBeforeClick[2]);
-// 			if(paused){
-// 				boxesHistory[beingDragged[1]].size[0] = posBeforeClick[1] + (mouse.clientX - canvas.offsetLeft - posBeforeClick[0]);
-// 				boxesHistory[beingDragged[1]].size[1] = posBeforeClick[3] + (mouse.clientY - canvas.offsetTop - posBeforeClick[2]);
-// 			}
-// 		}
-// 	 }
-// }
-//
-// function mouseUp(mouse){
-// 	dragOk = false;
-// 	beingDragged = null;
-// 	posBeforeClick = null;
-// }
+function ondrag(x,y){
+	if (dragOk){
+		//console.log(beingDragged);
+		if (beingDragged[0] == -1){
+			boxes[beingDragged[1]].position[0] = x - - boxes[beingDragged[1]].size[0]/2;
+			boxes[beingDragged[1]].position[1] = y - boxes[beingDragged[1]].size[1]/2;
+			if(paused){
+				boxesHistory[beingDragged[1]].position[0] = x - boxes[beingDragged[1]].size[0]/2;
+				boxesHistory[beingDragged[1]].position[1] = y - boxes[beingDragged[1]].size[1]/2;
+			}
+		}
+		if (beingDragged[0] == 3){
+			boxes[beingDragged[1]].size[0] = posBeforeClick[1] + (x - posBeforeClick[0]);
+			boxes[beingDragged[1]].size[1] = posBeforeClick[3] + (y - posBeforeClick[2]);
+			if(paused){
+				boxesHistory[beingDragged[1]].size[0] = posBeforeClick[1] + (x - posBeforeClick[0]);
+				boxesHistory[beingDragged[1]].size[1] = posBeforeClick[3] + (y - posBeforeClick[2]);
+			}
+		}
+	 }
+}
+
+function mouseUp(mouse){
+	dragOk = false;
+	beingDragged = null;
+	posBeforeClick = null;
+}
 
 function collidex(v, ball){ //calculates the velocity/spin resulting from a collision with wall
   if(ball.spin !== 0){ //apply effect of spin on velocity
@@ -390,8 +414,8 @@ for(var i=0; i<numberBalls; i++){
   var rad = 15;
   var x = randIntRange(rad, width - rad);
   var y = randIntRange(rad, height - rad);
-  var vx = 4; //pixels per tick velocity
-  var vy = -3;
+  var vx = 0.1; //pixels per tick velocity
+  var vy = -0.1;
   var color = [0.9,0.9,0.3,1];
   var mass = 1;
 
@@ -418,5 +442,5 @@ for(var i = 0; i < numberBoxes; i++){
 var tsk = new Task(function(){
   game();
 }, this);
-tsk.interval = 10;
+tsk.interval = 60;
 tsk.repeat(10000);
