@@ -29,11 +29,11 @@ function calculateScale(root, modeI){
     }
     if(x==6){x=0; it++} else{x++}
   }
-  post(currentScale);
+//  post(currentScale);
 }
 
 setScale(1, 1);
-post(currentScale);
+//post(currentScale);
 
 
 

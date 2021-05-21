@@ -202,6 +202,9 @@ function clear(){
 function game(){
   clear();
   sketch.glclear();
+  sketch.glcolor(.2, .2, .2);
+  sketch.moveto(-1, -1);
+  sketch.plane(2,2);
   for(var i=0; i<numberBalls; i++){
     var b = balls[i];
     b.update();
@@ -227,7 +230,7 @@ function onclick(x,y)
    var x_click = Math.floor((worldx+1.)/colwidth); // which column we clicked
    var y_click = Math.floor((1.-worldy)/rowheight); // which row we clicked
    //state[x_click][y_click] = !state[x_click][y_click]; // flip the state of the clicked point
-   ondrag(x_click, y_click); // output the coordinates and state of the clicked point
+   post(x_click, y_click); // output the coordinates and state of the clicked point
 }
 
 // function mouseDown(mouse){
@@ -442,5 +445,5 @@ for(var i = 0; i < numberBoxes; i++){
 var tsk = new Task(function(){
   game();
 }, this);
-tsk.interval = 60;
+tsk.interval = 30;
 tsk.repeat(10000);

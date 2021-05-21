@@ -9,18 +9,19 @@ gravity, pend, dragOk, beingDragged, mouseInit, radInit, cYellow, cBlack, cGrey,
 width = 200;
 height = 200;
 bounce = 0.65;
-gravity = -0.3;
+gravity = -0.9;
 dampening = 0.99;
 dragOk = false;
 numberMagnets = 3;
 beingDragged = null;
 paused = false;
 cOrange = [0.9,0.7,0.2,1];
-cYellow = [0.9,0.9,0.3,0.7];
+cYellow = [0.9,0.9,0.3,1];
 cGrey = [0.3, 0.3, 0.3];
 cBlack = [0,0,0];
 paused = true;
 tick = 0;
+
 
 
 ///////////////////////////////////OBJECTS//////////////////////////////////////
@@ -31,7 +32,7 @@ function Pendulum(x, y, len){
   this.angle = Math.PI / 4;
   this.v = 0.0;
   this.a = 0.0;
-  this.rad = 20;
+  this.rad = 15;
 
 
   this.update = function(){
@@ -54,7 +55,9 @@ function Pendulum(x, y, len){
       this.position[0] += this.origin[0];
       this.position[1] += this.origin[1];
       tick++;
-    }}
+    }
+    outlet(0, this.position[0]*100);
+  }
 
     this.render = function(ctx){
       //DRAW PIVOT
@@ -86,13 +89,23 @@ function Magnet(x, y, r) {
     ctx.glcolor(cOrange);
     ctx.moveto(coordToFloat(this.position[0]), coordToFloat(this.position[1]));
     ctx.circle(this.rad/100);
-    ctx.glcolor(cYellow);
+    ctx.glcolor(0.9,0.9,0.3,0.6);
     ctx.circle(this.field/100);
   }
 }
 
 
 ///////////////////////////////////FUNCTIONS////////////////////////////////////
+function setDrag(n){
+  dampening = n/10;
+}
+function setGravity(n){
+  gravity = -n/50;
+}
+function setDrive(n){
+  drive = n;
+}
+
 function playPause(){
   paused = !paused;
   tick = 0;
@@ -116,6 +129,10 @@ function clear(){
 function game(){
   clear();
   sketch.glclear();
+  sketch.glclear();
+  sketch.glcolor(.2, .2, .2);
+  sketch.moveto(-1, -1);
+  sketch.plane(2,2);
   pend.update();
   pend.render(sketch);
   for(var i=0; i<numberMagnets; i++){
