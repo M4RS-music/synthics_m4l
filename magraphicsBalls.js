@@ -5,7 +5,7 @@ outlets = 4;
 ///////////////////////////////////GLOBAL///////////////////////////////////////
 var width, height, boxes = [], numberBoxes, balls = [], ballsHistory = [],
     boxesHistory = [], numberBalls, drag, beingDragged, friction, bounce,
-    gravity, posBeforeClick, paused, trigger;
+    gravity, posBeforeClick, paused, trigger, triggerRegister;
 
 width = 200;
 height = 200;
@@ -18,6 +18,8 @@ friction = 0.04;
 beingDragged = null;
 paused = false;
 trigger = true;
+triggerRegister = 0;
+
 
 
 
@@ -61,8 +63,18 @@ function Ball(i, rad, x, y, vx, vy, color, mass){
     if(Math.abs(this.vx) <= -drag){this.vx = 0; this.atRestx = true;}
 
     if(!paused){
-      if(this.x-this.rad <= 0 || this.x+this.rad >= width) {this.vx = collidex(this.vx, this); if(trigger){outlet(0, 1); outlet(1, this.y*2 + 40)}}
-      if(this.y-this.rad <= 0 || this.y+this.rad >= height) {this.vy = collidey(this.vy, this); if(trigger){outlet(0, 1); outlet(1, this.x*2 + 40)}}
+      if(this.x-this.rad <= 0 || this.x+this.rad >= width){
+        this.vx = collidex(this.vx, this);
+        if(trigger){
+          outlet(0, 1);
+          outlet(1, this.y + (triggerRegister*12));
+        }}
+      if(this.y-this.rad <= 0 || this.y+this.rad >= height){
+        this.vy = collidey(this.vy, this);
+        if(trigger){
+          outlet(0, 1);
+          outlet(1, this.x + (triggerRegister*12));
+        }}
 
       //collision detection w boxes
       for(var x=0; x < numberBoxes; x++){
@@ -173,6 +185,10 @@ function CollisionBox(x, y, w, h){
 
 
 ///////////////////////////////////FUNCTIONS////////////////////////////////////
+function setTriggerRegister(r){
+  triggerRegister = r;
+}
+
 function triggerBool(b){
   trigger = b;
 }
