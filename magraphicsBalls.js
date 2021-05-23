@@ -4,7 +4,7 @@ outlets = 4;
 
 ///////////////////////////////////GLOBAL///////////////////////////////////////
 var width, height, boxes = [], numberBoxes, balls = [], ballsHistory = [],
-    boxesHistory = [], numberBalls, drag, dragOk, beingDragged, friction, bounce,
+    boxesHistory = [], numberBalls, drag, beingDragged, friction, bounce,
     gravity, posBeforeClick, paused, trigger;
 
 width = 200;
@@ -15,7 +15,6 @@ bounce = 1;
 gravity = -0.01;
 drag = 0.0001;
 friction = 0.04;
-dragOk = false;
 beingDragged = null;
 paused = false;
 trigger = true;
@@ -25,6 +24,24 @@ trigger = true;
 
 
 ///////////////////////////////////OBJECTS//////////////////////////////////////
+function ModifyIndicator(){
+  this.x = 20;
+  this.y = 20;
+  this.rad = 0.06;
+  this.draw = false;
+  this.color = [0.9,0.9,0.3,1]
+
+  this.setModify = function(v){
+    this.draw = v;
+  }
+  this.render = function(ctx){
+    ctx.glcolor(this.color);
+    ctx.moveto(coordToFloat(this.x), coordToFloat(this.y));
+    ctx.circle(this.rad);
+  }
+}
+
+
 function Ball(i, rad, x, y, vx, vy, color, mass){
   this.rad = rad;
   this.x = x;
@@ -205,6 +222,8 @@ function game(){
   sketch.glcolor(.2, .2, .2);
   sketch.moveto(-1, -1);
   sketch.plane(2,2);
+  if(mod.draw){mod.render(sketch);};
+
   for(var i=0; i<numberBalls; i++){
     var b = balls[i];
     b.update();
@@ -220,17 +239,30 @@ function game(){
  //assign mouse events to functions
 }
 
-////////////////Click and Drag////////////////////
-function onclick(x,y)
-{
+////////////////Click and Modify////////////////////
+function onclick(x,y){
    var worldx = sketch.screentoworld(x,y)[0];
    var worldy = sketch.screentoworld(x,y)[1];
    var colwidth = 2./200; // width of a column, in world coordinates
    var rowheight = 2./200; // width of a row, in world coordinates
    var x_click = Math.floor((worldx+1.)/colwidth); // which column we clicked
    var y_click = Math.floor((1.-worldy)/rowheight); // which row we clicked
-   //state[x_click][y_click] = !state[x_click][y_click]; // flip the state of the clicked point
-   post(x_click, y_click); // output the coordinates and state of the clicked point
+
+   if(mod.draw){
+     mod.setModify(false);
+     post("mod off");
+   } else{
+     for(var i=0; i<numberBalls; i++){
+       b = balls[i];
+       if(getDistance(x_click, y_click, b.x, b.y) < b.rad){
+         mod.setModify(true);
+         beingDragged = [0,i];
+         post(x_click, y_click, ":mouse...");
+         post(b.x, b.y, ":ball");
+         break;
+       }
+     }
+   }
 }
 
 // function mouseDown(mouse){
@@ -269,33 +301,27 @@ function onclick(x,y)
 // 	}
 // }
 //
-function ondrag(x,y){
-	if (dragOk){
-		//console.log(beingDragged);
-		if (beingDragged[0] == -1){
-			boxes[beingDragged[1]].position[0] = x - - boxes[beingDragged[1]].size[0]/2;
-			boxes[beingDragged[1]].position[1] = y - boxes[beingDragged[1]].size[1]/2;
-			if(paused){
-				boxesHistory[beingDragged[1]].position[0] = x - boxes[beingDragged[1]].size[0]/2;
-				boxesHistory[beingDragged[1]].position[1] = y - boxes[beingDragged[1]].size[1]/2;
-			}
-		}
-		if (beingDragged[0] == 3){
-			boxes[beingDragged[1]].size[0] = posBeforeClick[1] + (x - posBeforeClick[0]);
-			boxes[beingDragged[1]].size[1] = posBeforeClick[3] + (y - posBeforeClick[2]);
-			if(paused){
-				boxesHistory[beingDragged[1]].size[0] = posBeforeClick[1] + (x - posBeforeClick[0]);
-				boxesHistory[beingDragged[1]].size[1] = posBeforeClick[3] + (y - posBeforeClick[2]);
-			}
-		}
-	 }
-}
-
-function mouseUp(mouse){
-	dragOk = false;
-	beingDragged = null;
-	posBeforeClick = null;
-}
+// function ondrag(x,y){
+// 	if (dragOk){
+// 		//console.log(beingDragged);
+// 		if (beingDragged[0] == -1){
+// 			boxes[beingDragged[1]].position[0] = x - - boxes[beingDragged[1]].size[0]/2;
+// 			boxes[beingDragged[1]].position[1] = y - boxes[beingDragged[1]].size[1]/2;
+// 			if(paused){
+// 				boxesHistory[beingDragged[1]].position[0] = x - boxes[beingDragged[1]].size[0]/2;
+// 				boxesHistory[beingDragged[1]].position[1] = y - boxes[beingDragged[1]].size[1]/2;
+// 			}
+// 		}
+// 		if (beingDragged[0] == 3){
+// 			boxes[beingDragged[1]].size[0] = posBeforeClick[1] + (x - posBeforeClick[0]);
+// 			boxes[beingDragged[1]].size[1] = posBeforeClick[3] + (y - posBeforeClick[2]);
+// 			if(paused){
+// 				boxesHistory[beingDragged[1]].size[0] = posBeforeClick[1] + (x - posBeforeClick[0]);
+// 				boxesHistory[beingDragged[1]].size[1] = posBeforeClick[3] + (y - posBeforeClick[2]);
+// 			}
+// 		}
+// 	 }
+// }
 
 function collidex(v, ball){ //calculates the velocity/spin resulting from a collision with wall
   if(ball.spin !== 0){ //apply effect of spin on velocity
@@ -413,6 +439,8 @@ function coordToFloat(c){
 function sign(x) { return x > 0 ? 1 : x < 0 ? -1 : 0; }
 
 ///////////////////////////////////INIT/////////////////////////////////////////
+mod = new ModifyIndicator();
+
 for(var i=0; i<numberBalls; i++){
   var rad = 15;
   var x = randIntRange(rad, width - rad);
