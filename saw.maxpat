@@ -178,7 +178,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 60.0, 150.0, 42.0, 27.0 ],
+					"patching_rect" : [ 32.0, 209.0, 42.0, 27.0 ],
 					"text" : "mtof"
 				}
 
@@ -234,7 +234,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "int", "int" ],
-					"patching_rect" : [ 60.0, 90.0, 48.0, 27.0 ],
+					"patching_rect" : [ 133.0, 78.0, 48.0, 27.0 ],
 					"text" : "swap"
 				}
 

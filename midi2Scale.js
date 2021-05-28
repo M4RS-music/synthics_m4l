@@ -16,7 +16,7 @@ modes = [ionian, dorian, phrygian, lydian, mixolydian, aeolian, locrian];
 
 
 function setScale(root, mode){ //interface function called by max, will set root and mode]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
-  calculateScale(root, mode);
+  calculateScale(root+4, mode);
 }
 
 function calculateScale(root, modeI){
