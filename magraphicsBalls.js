@@ -444,7 +444,7 @@ function randIntRange(min, max){
 
 
 function floatToCoord(f){ //returns the coordinate or a floating point position on sketch
-  return 100 * f + 100;
+  return -100 * f + 100;
 }
 
 function coordToFloat(c){
