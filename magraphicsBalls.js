@@ -259,10 +259,9 @@ function game(){
 function onclick(x,y){
    var worldx = sketch.screentoworld(x,y)[0];
    var worldy = sketch.screentoworld(x,y)[1];
-   var colwidth = 2./200; // width of a column, in world coordinates
-   var rowheight = 2./200; // width of a row, in world coordinates
-   var x_click = Math.floor((worldx+1.)/colwidth); // which column we clicked
-   var y_click = Math.floor((1.-worldy)/rowheight); // which row we clicked
+
+   var x_click = floatToCoord(worldx); // position of click on coordinate grid
+   var y_click = floatToCoord(worldy);
 
    if(mod.draw){
      mod.setModify(false);
