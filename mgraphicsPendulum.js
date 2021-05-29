@@ -115,6 +115,32 @@ function Magnet(x, y, r) {
 
 
 ///////////////////////////////////FUNCTIONS////////////////////////////////////
+function setXPos(x){
+  if(beingDragged != null){
+    if(beingDragged[0] == 0){//change ball position
+      magnets[beingDragged[1]].position[0] = x;
+    //  magnetsHistory[beingDragged[1]].position[0] = x;
+    }
+    if(beingDragged[0] == 1){//change pend position
+    //  boxes[beingDragged[1]].position[0] = x;
+    //  boxesHistory[beingDragged[1]].position[0] = x;
+    }
+  }
+}
+function setYPos(x){
+  if(beingDragged != null){
+    if(beingDragged[0] == 0){//change ball position
+      magnets[beingDragged[1]].position[1] = x;
+    //  magnetsHistory[beingDragged[1]].position[0] = x;
+    }
+    if(beingDragged[0] == 1){//change pend position
+    //  boxes[beingDragged[1]].position[0] = x;
+    //  boxesHistory[beingDragged[1]].position[0] = x;
+    }
+  }
+}
+
+
 function setDrag(n){
   dampening = n/10;
 }
@@ -187,6 +213,7 @@ function game(){
     var mag = magnets[i];
     mag.render(sketch);
   }
+  if(mod.draw){mod.render(sketch);};
   //canvas.onmousedown = mouseDown;
   //canvas.onmouseup = mouseUp;
   refresh();
