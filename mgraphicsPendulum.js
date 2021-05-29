@@ -4,14 +4,13 @@ outlets = 4;
 
 ///////////////////////////////////GLOBAL///////////////////////////////////////
 var canvas, ctx, width, height, magnets = [], numberMagnets, dampening, bounce,
-gravity, pend, dragOk, beingDragged, mouseInit, radInit, cYellow, cBlack, cGrey, drive, paused, initpause;
+gravity, pend, beingDragged, mouseInit, radInit, cYellow, cBlack, cGrey, drive, paused, initpause, doublepend;
 
 width = 200;
 height = 200;
 bounce = 0.65;
 gravity = -0.9;
 dampening = 0.99;
-dragOk = false;
 numberMagnets = 3;
 beingDragged = null;
 paused = false;
@@ -21,10 +20,29 @@ cGrey = [0.3, 0.3, 0.3];
 cBlack = [0,0,0];
 paused = true;
 tick = 0;
+doublepend = false;
 
 
 
 ///////////////////////////////////OBJECTS//////////////////////////////////////
+function ModifyIndicator(){
+  this.x = 190;
+  this.y = 10;
+  this.rad = 0.06;
+  this.draw = false;
+  this.color = [0.8,1,0.3,1];
+
+  this.setModify = function(v){
+    this.draw = v;
+  }
+  this.render = function(ctx){
+    ctx.glcolor(this.color);
+    ctx.moveto(coordToFloat(this.x), coordToFloat(this.y));
+    ctx.circle(this.rad);
+  }
+}
+
+
 function Pendulum(x, y, len){
   this.origin = [x, y];
   this.position = [];
@@ -80,13 +98,14 @@ function Magnet(x, y, r) {
   this.rad = r;
   this.strength = 0;
   this.field = r*2;
+  this.color = cOrange;
 
   this.update = function(){
 
   }
 
   this.render = function(ctx){
-    ctx.glcolor(cOrange);
+    ctx.glcolor(this.color);
     ctx.moveto(coordToFloat(this.position[0]), coordToFloat(this.position[1]));
     ctx.circle(this.rad/100);
     ctx.glcolor(0.9,0.9,0.3,0.6);
@@ -115,13 +134,42 @@ function playPause(){
 
 
 function floatToCoord(f){ //returns the coordinate or a floating point position on sketch
-  return 100 * f + 100;
+  return -100 * f + 100;
 }
 
 function coordToFloat(c){
   return -(c/100 - 1);
 }
 
+//////////////////////////////////CLICK AND MOD/////////////////////////////////
+function onclick(x,y){
+   var worldx = sketch.screentoworld(x,y)[0];
+   var worldy = sketch.screentoworld(x,y)[1];
+
+   var x_click = floatToCoord(worldx); // position of click on coordinate grid
+   var y_click = floatToCoord(worldy);
+
+   if(mod.draw){
+     mod.setModify(false);
+     if(beingDragged[0]==0){
+       magnets[beingDragged[1]].color = cOrange;
+     }
+     beingDragged = null;
+     post("mod off");
+   } else{
+     for(var i=0; i<numberMagnets; i++){
+       m = magnets[i];
+       if(getDistance(x_click, y_click, m.position[0], m.position[1]) < m.field){
+         mod.setModify(true);
+         beingDragged = [0,i];
+         m.color = [0.8,1,0.3,1];
+         break;
+       }
+     }
+   }
+}
+
+////////////////////////////////////////////GAME////////////////////////////////
 function clear(){
   sketch.glclear();
 }
@@ -155,6 +203,7 @@ function randIntRange(min, max){
 }
 
 ///////////////////////////////////INIT/////////////////////////////////////////
+mod = new ModifyIndicator();
 pend = new Pendulum(100, 20, 110);
 for(var i=0; i<numberMagnets; i++){
   var r = 10;

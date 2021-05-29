@@ -129,7 +129,7 @@ function Ball(i, rad, x, y, vx, vy, color, mass){
     sketch.circle(this.rad/100);
 
     if(paused){
-      sketch.glcolor([0.1,0.3,0.3,1]);
+      sketch.glcolor([0.1,1,1,1]);
       sketch.moveto(coordToFloat(this.x), coordToFloat(this.y));
       sketch.lineto(coordToFloat(this.vx*10 + this.x), coordToFloat(this.vy*10 + this.y))
     }
