@@ -145,6 +145,7 @@ function CollisionBox(x, y, w, h){
   this.h = h;
   this.w = w;
   this.corners = [[], [], [], []];
+  this.color = [.3, .3, .3];
 
   this.calculateCorners = function(){
     var w = this.size[0] / 2;
@@ -166,7 +167,7 @@ function CollisionBox(x, y, w, h){
 
   this.render = function(ctx){
     //Draw BOX
-    ctx.glcolor(.3, .3, .3);
+    ctx.glcolor(this.color);
     ctx.moveto(coordToFloat(this.position[0]+(this.size[0]/2)), coordToFloat(this.position[1]+(this.size[1]/2)));
     ctx.plane((this.size[0]/2)/100,(this.size[1]/2)/100);
     //Draw Top Left Corner
@@ -191,6 +192,24 @@ function CollisionBox(x, y, w, h){
 
 
 ///////////////////////////////////FUNCTIONS////////////////////////////////////
+function setHeight(x){
+  if(beingDragged != null){
+    if(beingDragged[0] == 1){//change ball velocity
+      boxes[beingDragged[1]].size[1] = x;
+      boxesHistory[beingDragged[1]].size[1] = x;
+    }
+  }
+}
+
+function setWidth(x){
+  if(beingDragged != null){
+    if(beingDragged[0] == 1){//change ball velocity
+      boxes[beingDragged[1]].size[0] = x;
+      boxesHistory[beingDragged[1]].size[0] = x;
+    }
+  }
+}
+
 function setYVel(x){
   if(beingDragged != null){
     if(beingDragged[0] == 0){//change ball velocity
@@ -317,18 +336,31 @@ function onclick(x,y){
      mod.setModify(false);
      if(beingDragged[0]==0){
        balls[beingDragged[1]].color = [0.9,0.9,0.3,1];
+     } else if(beingDragged[0]==1){
+       boxes[beingDragged[1]].color = [0.3,0.3,0.3,1];
      }
      beingDragged = null;
-     post("mod off");
-   } else{
+    // post("mod off");
+  } else{
+     for(var i=0; i<numberBoxes; i++){
+       var box = boxes[i];
+       if(x_click >= box.position[0] && x_click <= box.position[0] + box.size[0]){
+         if(y_click >= box.position[1] && y_click <= box.position[1] + box.size[1]){
+           mod.setModify(true);
+           beingDragged = [1,i];
+           box.color = [0.8,1,0.3,1];
+         }
+       }
+
+     }
      for(var i=0; i<numberBalls; i++){
-       b = balls[i];
+       var b = balls[i];
        if(getDistance(x_click, y_click, b.x, b.y) < b.rad){
          mod.setModify(true);
          beingDragged = [0,i];
          b.color = [0.8,1,0.3,1];
-         post(x_click, y_click, ":mouse...");
-         post(b.x, b.y, ":ball");
+        // post(x_click, y_click, ":mouse...");
+        // post(b.x, b.y, ":ball");
          break;
        }
      }

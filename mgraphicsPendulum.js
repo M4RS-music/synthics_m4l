@@ -192,6 +192,7 @@ function onclick(x,y){
          break;
        }
      }
+
    }
 }
 
