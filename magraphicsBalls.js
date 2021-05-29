@@ -27,8 +27,8 @@ triggerRegister = 0;
 
 ///////////////////////////////////OBJECTS//////////////////////////////////////
 function ModifyIndicator(){
-  this.x = 20;
-  this.y = 20;
+  this.x = 190;
+  this.y = 10;
   this.rad = 0.06;
   this.draw = false;
   this.color = [0.8,1,0.3,1];
@@ -128,6 +128,12 @@ function Ball(i, rad, x, y, vx, vy, color, mass){
     sketch.moveto(coordToFloat(this.x), coordToFloat(this.y));
     sketch.circle(this.rad/100);
 
+    if(paused){
+      sketch.glcolor([0.1,0.3,0.3,1]);
+      sketch.moveto(coordToFloat(this.x), coordToFloat(this.y));
+      sketch.lineto(coordToFloat(this.vx*10 + this.x), coordToFloat(this.vy*10 + this.y))
+    }
+
   }
 }
 
@@ -185,6 +191,24 @@ function CollisionBox(x, y, w, h){
 
 
 ///////////////////////////////////FUNCTIONS////////////////////////////////////
+function setYVel(x){
+  if(beingDragged != null){
+    if(beingDragged[0] == 0){//change ball velocity
+      balls[beingDragged[1]].vy = -x;
+      ballsHistory[beingDragged[1]].vy = -x;
+    }
+  }
+}
+
+function setXVel(x){
+  if(beingDragged != null){
+    if(beingDragged[0] == 0){//change ball velocity
+      balls[beingDragged[1]].vx = -x;
+      ballsHistory[beingDragged[1]].vx = -x;
+    }
+  }
+}
+
 function setYPos(x){
   if(beingDragged != null){
     if(beingDragged[0] == 0){//change ball position
