@@ -4,7 +4,7 @@ outlets = 4;
 
 ///////////////////////////////////GLOBAL///////////////////////////////////////
 var canvas, ctx, width, height, magnets = [], numberMagnets, dampening, bounce,
-gravity, pend, beingDragged, mouseInit, radInit, cYellow, cBlack, cGrey, drive, paused, initpause, doublepend;
+gravity, pend, beingDragged, mouseInit, radInit, cYellow, cBlack, cGrey, drive, paused, initpause, doublepend, angle, length;
 
 width = 200;
 height = 200;
@@ -21,6 +21,8 @@ cBlack = [0,0,0];
 paused = true;
 tick = 0;
 doublepend = false;
+angle = Math.PI/4;
+length = 110;
 
 
 
@@ -43,14 +45,15 @@ function ModifyIndicator(){
 }
 
 
-function Pendulum(x, y, len){
+function Pendulum(x, y, len, angle){
   this.origin = [x, y];
   this.position = [];
   this.len = len;
-  this.angle = Math.PI / 4;
+  this.angle = angle;
   this.v = 0.0;
   this.a = 0.0;
   this.rad = 15;
+  this.color = cYellow;
 
 
   this.update = function(){
@@ -74,6 +77,12 @@ function Pendulum(x, y, len){
       this.position[1] += this.origin[1];
       tick++;
     }
+
+    if(paused){
+      this.position = [this.len * Math.sin(this.angle), this.len * Math.cos(this.angle)];
+      this.position[0] += this.origin[0];
+      this.position[1] += this.origin[1];
+    }
     outlet(0, this.position[0]*100);
   }
 
@@ -87,7 +96,7 @@ function Pendulum(x, y, len){
       ctx.lineto(coordToFloat(this.position[0]), coordToFloat(this.position[1]));
 
       //DRAW WEIGHT
-      ctx.glcolor(cYellow);
+      ctx.glcolor(this.color);
       ctx.moveto(coordToFloat(this.position[0]), coordToFloat(this.position[1]));
       ctx.circle(this.rad/100);
     }
@@ -115,6 +124,25 @@ function Magnet(x, y, r) {
 
 
 ///////////////////////////////////FUNCTIONS////////////////////////////////////
+function setLength(x){
+  post("test");
+  if(beingDragged != null){
+    if(beingDragged[0] == 1){//change pend position
+      pend.len = x;
+      length = x;
+    }
+  }
+}
+
+function setAngle(x){
+  if(beingDragged != null){
+    if(beingDragged[0] == 1){//change pend position
+      pend.angle = x;
+      angle = x;
+    }
+  }
+}
+
 function setXPos(x){
   if(beingDragged != null){
     if(beingDragged[0] == 0){//change ball position
@@ -122,6 +150,7 @@ function setXPos(x){
     //  magnetsHistory[beingDragged[1]].position[0] = x;
     }
     if(beingDragged[0] == 1){//change pend position
+      pend.position[1] = y;
     //  boxes[beingDragged[1]].position[0] = x;
     //  boxesHistory[beingDragged[1]].position[0] = x;
     }
@@ -154,8 +183,19 @@ function setDrive(n){
 function playPause(){
   paused = !paused;
   tick = 0;
-  pend = new Pendulum(100, 20, 110);
+  pend = new Pendulum(100, 20, length, angle);
   tsk.repeat(10000);
+  if(modpend.draw){
+    modpend.setModify(false);
+    if(beingDragged[0]==0){
+      magnets[beingDragged[1]].color = cOrange;
+    }
+    if(beingDragged[0]==1){
+      pend.color = cYellow;
+    }
+    beingDragged = null;
+   // post("mod off");
+  }
 }
 
 
@@ -175,18 +215,26 @@ function onclick(x,y){
    var x_click = floatToCoord(worldx); // position of click on coordinate grid
    var y_click = floatToCoord(worldy);
 
-   if(mod.draw){
-     mod.setModify(false);
+   if(modpend.draw){
+     modpend.setModify(false);
      if(beingDragged[0]==0){
        magnets[beingDragged[1]].color = cOrange;
      }
+     if(beingDragged[0]==1){
+       pend.color = cYellow;
+     }
      beingDragged = null;
-     post("mod off");
-   } else{
+    // post("mod off");
+   } else if(getDistance(x_click, y_click, pend.position[0], pend.position[1]) <= pend.rad){
+    // post('yujh');
+     modpend.setModify(true);
+     beingDragged = [1,pend];
+     pend.color = [0.8,1,0.3,1];
+   }else{
      for(var i=0; i<numberMagnets; i++){
        m = magnets[i];
        if(getDistance(x_click, y_click, m.position[0], m.position[1]) < m.field){
-         mod.setModify(true);
+         modpend.setModify(true);
          beingDragged = [0,i];
          m.color = [0.8,1,0.3,1];
          break;
@@ -214,7 +262,7 @@ function game(){
     var mag = magnets[i];
     mag.render(sketch);
   }
-  if(mod.draw){mod.render(sketch);};
+  if(modpend.draw){modpend.render(sketch);};
   //canvas.onmousedown = mouseDown;
   //canvas.onmouseup = mouseUp;
   refresh();
@@ -231,8 +279,8 @@ function randIntRange(min, max){
 }
 
 ///////////////////////////////////INIT/////////////////////////////////////////
-mod = new ModifyIndicator();
-pend = new Pendulum(100, 20, 110);
+modpend = new ModifyIndicator();
+pend = new Pendulum(100, 20, 110, Math.PI/4);
 for(var i=0; i<numberMagnets; i++){
   var r = 10;
   var x = randIntRange(r, width - r);
