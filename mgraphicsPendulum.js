@@ -84,6 +84,7 @@ function Pendulum(x, y, len, angle){
       this.position[1] += this.origin[1];
     }
     outlet(0, this.position[0]*100);
+    outlet(1, this.position[0]);
   }
 
     this.render = function(ctx){

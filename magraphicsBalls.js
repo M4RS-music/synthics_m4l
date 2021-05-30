@@ -289,6 +289,16 @@ function setDrag(n){
    }
    paused = !paused;
 	tsk.repeat(10000);
+  if(mod.draw){
+    mod.setModify(false);
+    if(beingDragged[0]==0){
+      balls[beingDragged[1]].color = [0.9,0.9,0.3,1];
+    } else if(beingDragged[0]==1){
+      boxes[beingDragged[1]].color = [0.3,0.3,0.3,1];
+    }
+    beingDragged = null;
+   // post("mod off");
+ }
 
  }
 
